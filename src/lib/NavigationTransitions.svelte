@@ -46,13 +46,15 @@
 	}
 
 	async function runLocaleBaffle({ preNavigation }: { preNavigation: boolean }) {
+		// Trigger haptics before the first async boundary so the initial language change
+		// still runs inside the originating user interaction.
+		triggerBuzzHaptic();
+
 		const baffleLib = await ensureBaffle();
 
 		const targets = getTargets();
 
 		if (targets.length === 0) return;
-
-		triggerBuzzHaptic();
 
 		try {
 			const instance = baffleLib(targets, BAFFLE_OPTIONS).start();
