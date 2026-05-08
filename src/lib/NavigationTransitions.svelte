@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { cancelHaptics, destroyHaptics, triggerButtonHaptic, triggerBuzzHaptic } from '$lib/haptics';
 	import { baseLocale, extractLocaleFromUrl, setLocale } from '$lib/paraglide/runtime.js';
 	import type baffleImport from 'baffle';
 
@@ -51,17 +52,40 @@
 
 		if (targets.length === 0) return;
 
-		const instance = baffleLib(targets, BAFFLE_OPTIONS).start();
-		const revealDelay = preNavigation ? 0 : 90;
-		const revealDuration = preNavigation ? 180 : 520;
+		triggerBuzzHaptic();
 
-		if (revealDelay > 0) {
-			await new Promise((resolve) => window.setTimeout(resolve, revealDelay));
+		try {
+			const instance = baffleLib(targets, BAFFLE_OPTIONS).start();
+			const revealDelay = preNavigation ? 0 : 90;
+			const revealDuration = preNavigation ? 180 : 520;
+
+			if (revealDelay > 0) {
+				await new Promise((resolve) => window.setTimeout(resolve, revealDelay));
+			}
+
+			instance.reveal(revealDuration);
+			await new Promise((resolve) => window.setTimeout(resolve, revealDuration));
+		} finally {
+			cancelHaptics();
 		}
-
-		instance.reveal(revealDuration);
-		await new Promise((resolve) => window.setTimeout(resolve, revealDuration));
 	}
+
+	function handleDocumentClick(event: MouseEvent) {
+		const target = event.target;
+
+		if (!(target instanceof Element) || !target.closest('button')) return;
+
+		triggerButtonHaptic();
+	}
+
+	onMount(() => {
+		document.addEventListener('click', handleDocumentClick, true);
+
+		return () => {
+			document.removeEventListener('click', handleDocumentClick, true);
+			destroyHaptics();
+		};
+	});
 
 	onNavigate(async (navigation) => {
 		if (!navigation.to?.url) return;
