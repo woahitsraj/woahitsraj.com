@@ -4,8 +4,7 @@
 	import {
 		cancelHaptics,
 		destroyHaptics,
-		triggerButtonHaptic,
-		triggerBuzzHaptic
+		triggerButtonHaptic
 	} from '$lib/haptics';
 	import { baseLocale, extractLocaleFromUrl, setLocale } from '$lib/paraglide/runtime.js';
 	import type baffleImport from 'baffle';
@@ -51,10 +50,6 @@
 	}
 
 	async function runLocaleBaffle({ preNavigation }: { preNavigation: boolean }) {
-		// Trigger haptics before the first async boundary so the initial language change
-		// still runs inside the originating user interaction.
-		triggerBuzzHaptic();
-
 		const baffleLib = await ensureBaffle();
 
 		const targets = getTargets();
