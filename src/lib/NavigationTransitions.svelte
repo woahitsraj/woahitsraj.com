@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { onMount, tick } from 'svelte';
-	import { cancelHaptics, destroyHaptics, triggerButtonHaptic, triggerBuzzHaptic } from '$lib/haptics';
+	import {
+		cancelHaptics,
+		destroyHaptics,
+		triggerButtonHaptic,
+		triggerBuzzHaptic
+	} from '$lib/haptics';
 	import { baseLocale, extractLocaleFromUrl, setLocale } from '$lib/paraglide/runtime.js';
 	import type baffleImport from 'baffle';
 
