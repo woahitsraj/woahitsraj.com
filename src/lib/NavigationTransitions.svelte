@@ -56,20 +56,16 @@
 
 		if (targets.length === 0) return;
 
-		try {
-			const instance = baffleLib(targets, BAFFLE_OPTIONS).start();
-			const revealDelay = preNavigation ? 0 : 90;
-			const revealDuration = preNavigation ? 180 : 520;
+		const instance = baffleLib(targets, BAFFLE_OPTIONS).start();
+		const revealDelay = preNavigation ? 0 : 90;
+		const revealDuration = preNavigation ? 180 : 520;
 
-			if (revealDelay > 0) {
-				await new Promise((resolve) => window.setTimeout(resolve, revealDelay));
-			}
-
-			instance.reveal(revealDuration);
-			await new Promise((resolve) => window.setTimeout(resolve, revealDuration));
-		} finally {
-			cancelHaptics();
+		if (revealDelay > 0) {
+			await new Promise((resolve) => window.setTimeout(resolve, revealDelay));
 		}
+
+		instance.reveal(revealDuration);
+		await new Promise((resolve) => window.setTimeout(resolve, revealDuration));
 	}
 
 	function handleDocumentClick(event: MouseEvent) {
@@ -99,14 +95,25 @@
 
 		if (isLocaleChange) {
 			setLocaleTransitionState(true);
-			await runLocaleBaffle({ preNavigation: true });
-			await setLocale(toLocale, { reload: false });
+
+			try {
+				await runLocaleBaffle({ preNavigation: true });
+				await setLocale(toLocale, { reload: false });
+			} catch (error) {
+				setLocaleTransitionState(false);
+				cancelHaptics();
+				throw error;
+			}
 
 			return () => {
 				void (async () => {
-					await tick();
-					await runLocaleBaffle({ preNavigation: false });
-					setLocaleTransitionState(false);
+					try {
+						await tick();
+						await runLocaleBaffle({ preNavigation: false });
+					} finally {
+						setLocaleTransitionState(false);
+						cancelHaptics();
+					}
 				})();
 			};
 		}
