@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { triggerBuzzHaptic } from '$lib/haptics';
 	import { m } from '$lib/paraglide/messages.js';
 	import { extractLocaleFromUrl, locales, localizeHref } from '$lib/paraglide/runtime.js';
 
@@ -24,14 +23,6 @@
 
 	function toggle() {
 		open = !open;
-	}
-
-	function handleLocaleSelect(locale: string) {
-		if (locale !== currentLocale) {
-			triggerBuzzHaptic();
-		}
-
-		close();
 	}
 
 	function handleDocumentClick(event: MouseEvent) {
@@ -114,7 +105,7 @@
 						class:active={currentLocale === locale}
 						role="menuitem"
 						aria-current={currentLocale === locale ? 'page' : undefined}
-						onclick={() => handleLocaleSelect(locale)}
+						onclick={close}
 					>
 						<span>{localeMarks[locale] ?? locale.toUpperCase()}</span>
 					</a>
