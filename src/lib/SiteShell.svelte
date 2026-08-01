@@ -146,6 +146,7 @@
 		display: flex;
 		flex: 1;
 		flex-direction: column;
+		view-transition-name: page-content;
 	}
 
 	.site-shell :global(a) {
@@ -169,6 +170,7 @@
 
 	nav {
 		z-index: 20;
+		view-transition-name: site-nav;
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
 		grid-template-areas: 'home links controls';
@@ -313,6 +315,7 @@
 		justify-content: center;
 		padding-block: var(--space-24);
 		margin-top: auto;
+		view-transition-name: site-footer;
 	}
 
 	footer::before {
