@@ -56,6 +56,21 @@
 	}
 }
 
+@keyframes page-content-out {
+	to {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+}
+
+@keyframes page-content-in {
+	from {
+		opacity: 0;
+		transform: translateY(18px);
+	}
+}
+
+/* Fallback crossfade for anything without its own transition name (e.g. error page) */
 ::view-transition-old(root),
 ::view-transition-new(root) {
 	animation-duration: 220ms;
@@ -71,10 +86,50 @@
 	animation-name: page-fade-in;
 }
 
+/* Nav and footer stay in place; identical content crossfades imperceptibly */
+::view-transition-group(site-nav),
+::view-transition-group(site-footer) {
+	animation-duration: 360ms;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(site-nav),
+::view-transition-new(site-nav),
+::view-transition-old(site-footer),
+::view-transition-new(site-footer) {
+	animation-duration: 200ms;
+	animation-fill-mode: both;
+	animation-timing-function: ease;
+}
+
+/* When scrolled, drop per-region names so the root crossfade handles the whole viewport */
+html[data-vt-scrolled] .site-shell nav,
+html[data-vt-scrolled] .site-shell footer,
+html[data-vt-scrolled] .site-shell__page {
+	view-transition-name: none;
+}
+
+/* Page content: fade out upward, then ease in from below */
+::view-transition-group(page-content) {
+	animation-duration: 510ms;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(page-content) {
+	animation: page-content-out 160ms cubic-bezier(0.3, 0, 0.7, 0.4) both;
+}
+
+::view-transition-new(page-content) {
+	animation: page-content-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 90ms both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-	::view-transition-old(root),
-	::view-transition-new(root) {
-		animation-duration: 1ms;
+	::view-transition-group(*),
+	::view-transition-image-pair(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation-duration: 1ms !important;
+		animation-delay: 0ms !important;
 	}
 }
 
@@ -104,7 +159,7 @@
 	--radius-card: 16px;
 	--radius-pill: 100px;
 	--radius-round: 50%;
-	--motion-enter: 0.7s ease;
+	--motion-enter: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 	interpolate-size: allow-keywords;
 }
 
@@ -217,6 +272,50 @@ html[data-page-transition] .reveal-scope.visible .reveal-5 {
 	transition-delay: 0s, 0s, 0s, 0s, 0s;
 }
 
+/* Initial load: animate from first paint without waiting for hydration */
+/* Explicit "to" keyframe: the base style is the hidden state until hydration adds .visible */
+@keyframes reveal-enter {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+html.js .reveal-scope.reveal-auto .reveal {
+	animation: reveal-enter var(--motion-enter) both;
+}
+
+html.js .reveal-scope.reveal-auto .reveal-1 {
+	animation-delay: 0.04s;
+}
+
+html.js .reveal-scope.reveal-auto .reveal-2 {
+	animation-delay: 0.11s;
+}
+
+html.js .reveal-scope.reveal-auto .reveal-3 {
+	animation-delay: 0.18s;
+}
+
+html.js .reveal-scope.reveal-auto .reveal-4 {
+	animation-delay: 0.25s;
+}
+
+html.js .reveal-scope.reveal-auto .reveal-5 {
+	animation-delay: 0.32s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html.js .reveal-scope.reveal-auto .reveal {
+		animation-duration: 1ms;
+		animation-delay: 0s;
+	}
+}
+
 .reveal-scope.visible .reveal-1,
 .reveal-scope.visible .reveal-2,
 .reveal-scope.visible .reveal-3,
@@ -227,21 +326,21 @@ html[data-page-transition] .reveal-scope.visible .reveal-5 {
 }
 
 .reveal-scope.visible .reveal-1 {
-	transition-delay: 0.1s, 0.1s, 0s, 0s, 0s;
+	transition-delay: 0.04s, 0.04s, 0s, 0s, 0s;
 }
 
 .reveal-scope.visible .reveal-2 {
-	transition-delay: 0.25s, 0.25s, 0s, 0s, 0s;
+	transition-delay: 0.11s, 0.11s, 0s, 0s, 0s;
 }
 
 .reveal-scope.visible .reveal-3 {
-	transition-delay: 0.38s, 0.38s, 0s, 0s, 0s;
+	transition-delay: 0.18s, 0.18s, 0s, 0s, 0s;
 }
 
 .reveal-scope.visible .reveal-4 {
-	transition-delay: 0.5s, 0.5s, 0s, 0s, 0s;
+	transition-delay: 0.25s, 0.25s, 0s, 0s, 0s;
 }
 
 .reveal-scope.visible .reveal-5 {
-	transition-delay: 0.62s, 0.62s, 0s, 0s, 0s;
+	transition-delay: 0.32s, 0.32s, 0s, 0s, 0s;
 }

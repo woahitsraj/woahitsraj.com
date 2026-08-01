@@ -1,3 +1,7 @@
+<script lang="ts" module>
+	let initialRender = true;
+</script>
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 
@@ -20,11 +24,14 @@
 	}
 
 	let { children }: Props = $props();
+	// CSS animates the first render at paint time, before hydration
+	const auto = initialRender;
 	let visible = $state(isLocaleTransitionActive() || isPageTransitionActive());
 	let revealFrame = 0;
 	let revealTimeout = 0;
 
 	onMount(() => {
+		initialRender = false;
 		if (isLocaleTransitionActive() || isPageTransitionActive()) {
 			visible = true;
 			return;
@@ -43,6 +50,6 @@
 	});
 </script>
 
-<div class="reveal-scope" class:visible>
+<div class="reveal-scope" class:visible class:reveal-auto={auto}>
 	{@render children?.()}
 </div>

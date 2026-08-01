@@ -10,6 +10,7 @@
 	const BAFFLE_SELECTOR = '[data-baffle]';
 	const LOCALE_TRANSITION_ATTR = 'data-locale-transition';
 	const PAGE_TRANSITION_ATTR = 'data-page-transition';
+	const SCROLLED_TRANSITION_ATTR = 'data-vt-scrolled';
 	const LOCALE_OPTION_SELECTOR = '.language-selector__option';
 	const BAFFLE_OPTIONS = {
 		characters:
@@ -165,7 +166,12 @@
 		return new Promise<void>((resolve) => {
 			setPageTransitionState(true);
 
-			document.startViewTransition(async () => {
+			// Scrolled snapshots anchor to the element, not the viewport; fall back to a root crossfade
+			if (window.scrollY > 40) {
+				document.documentElement.toggleAttribute(SCROLLED_TRANSITION_ATTR, true);
+			}
+
+			const transition = document.startViewTransition(async () => {
 				resolve();
 				try {
 					await navigation.complete;
@@ -173,6 +179,10 @@
 					await tick();
 					setPageTransitionState(false);
 				}
+			});
+
+			void transition.finished.finally(() => {
+				document.documentElement.removeAttribute(SCROLLED_TRANSITION_ATTR);
 			});
 		});
 	});
