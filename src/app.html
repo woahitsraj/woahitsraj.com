@@ -3,23 +3,31 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="color-scheme" content="light dark" />
-		<meta name="theme-color" content="#f3ede3" />
+		<meta name="theme-color" content="#f3eee3" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<script>
 			(() => {
-				const light = '#f3ede3';
-				const dark = '#15110d';
 				const root = document.documentElement;
 				root.classList.add('js');
-				const themeMeta = document.querySelector('meta[name="theme-color"]');
 				const stored = localStorage.getItem('site-theme');
 				const isDark =
 					stored !== null
 						? stored === 'dark'
 						: window.matchMedia('(prefers-color-scheme: dark)').matches;
-
 				root.dataset.theme = isDark ? 'dark' : 'light';
-				themeMeta?.setAttribute('content', isDark ? dark : light);
+
+				// The season in Gothenburg today, unless one was picked earlier in this visit.
+				const seasons = ['winter', 'spring', 'summer', 'autumn'];
+				let season = seasons[Math.floor(((new Date().getMonth() + 1) % 12) / 3)];
+				try {
+					const picked = sessionStorage.getItem('site-season');
+					if (seasons.includes(picked)) season = picked;
+				} catch {}
+				root.dataset.season = season;
+
+				const paper = getComputedStyle(root).getPropertyValue('--site-bg').trim();
+				if (paper)
+					document.querySelector('meta[name="theme-color"]')?.setAttribute('content', paper);
 			})();
 		</script>
 		<meta
@@ -28,21 +36,7 @@
 		/>
 		<link
 			rel="preload"
-			href="%sveltekit.assets%/fonts/lora-400-latin.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin="anonymous"
-		/>
-		<link
-			rel="preload"
-			href="%sveltekit.assets%/fonts/fraunces-300-latin.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin="anonymous"
-		/>
-		<link
-			rel="preload"
-			href="%sveltekit.assets%/fonts/fraunces-300-italic-latin.woff2"
+			href="%sveltekit.assets%/fonts/familjen-grotesk-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin="anonymous"

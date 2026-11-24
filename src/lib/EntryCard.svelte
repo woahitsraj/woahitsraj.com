@@ -26,106 +26,96 @@
 	}
 </script>
 
-<section class={`entry-card page-grid__item page-grid__item--full reveal ${revealClass}`.trim()}>
-	<h2 class="entry-card__title">
-		{#if href}
-			<a {href} target="_blank" rel="noopener noreferrer" data-baffle>{title}</a>
-		{:else}
-			<span data-baffle>{title}</span>
+<section class={`entry reveal ${revealClass}`.trim()}>
+	<p class="entry__meta">
+		{#each metaParts as part, index (part)}
+			<span
+				class:entry__lead={index === 0 && metaParts.length > 1}
+				{...baffleAttributes(metaBaffle)}>{part}</span
+			>
+		{/each}
+	</p>
+	<div>
+		<h2 class="entry__title">
+			{#if href}
+				<a {href} target="_blank" rel="noopener noreferrer" data-baffle>{title}</a>
+			{:else}
+				<span data-baffle>{title}</span>
+			{/if}
+		</h2>
+		<DetailList items={details} />
+		{#if embed}
+			<div class="entry__video">
+				<iframe
+					src={embed}
+					{title}
+					loading="lazy"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					allowfullscreen
+				></iframe>
+			</div>
 		{/if}
-	</h2>
-
-	{#if metaParts.length > 0}
-		<p class="entry-card__meta">
-			{#each metaParts as part, index (part)}
-				<span {...baffleAttributes(metaBaffle)}>{part}</span>
-				{#if index < metaParts.length - 1}
-					<span class="entry-card__separator" aria-hidden="true">·</span>
-				{/if}
-			{/each}
-		</p>
-	{/if}
-
-	<DetailList items={details} />
-
-	{#if embed}
-		<div class="entry-card__video">
-			<iframe
-				src={embed}
-				{title}
-				loading="lazy"
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-				allowfullscreen
-			></iframe>
-		</div>
-	{/if}
+	</div>
 </section>
 
 <style>
-	.entry-card__title {
-		font-family: var(--font-display);
-		font-size: 1.5rem;
-		line-height: 1.2;
-		letter-spacing: -0.02em;
-		margin: 0 0 0.5rem;
-		color: var(--site-text);
-		transition: color 0.45s ease;
+	.entry {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+		gap: 0.5rem clamp(1.5rem, 5vw, 4.5rem);
+		padding-block: clamp(1.5rem, 3.5vw, 2.75rem);
+		border-top: 1px solid var(--site-rule);
 	}
 
-	.entry-card__title a {
-		color: var(--site-accent);
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		font-weight: inherit;
-		text-decoration-line: underline;
+	.entry__meta {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		font-size: var(--text-body);
+		color: var(--site-text-muted);
+	}
+
+	.entry__lead {
+		font-weight: 600;
+		color: var(--site-text);
+	}
+
+	.entry__title {
+		margin: 0 0 0.6rem;
+		font-size: clamp(1.5rem, 2.4vw, 2rem);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		color: var(--site-text);
+	}
+
+	.entry__title a {
+		color: inherit;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.16em;
-		text-decoration-color: color-mix(in srgb, var(--site-accent) 45%, transparent);
-		transition:
-			color 0.25s ease,
-			text-decoration-color 0.25s ease;
 	}
 
-	.entry-card__title a::after {
-		content: '↗';
-		font-size: 0.9rem;
-		line-height: 1;
+	.entry__title a:hover {
+		color: var(--site-accent);
 	}
 
-	.entry-card__title a:hover {
-		color: var(--site-text);
-		text-decoration-color: var(--site-accent);
-	}
-
-	.entry-card__meta {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.35rem;
-		font-size: var(--text-caption);
-		letter-spacing: 0.04em;
-		color: var(--site-text-muted);
-		margin: 0 0 var(--space-16);
-	}
-
-	.entry-card__video {
+	.entry__video {
 		margin-top: var(--space-24);
+		max-width: 40rem;
 		border: 1px solid var(--site-border);
-		border-radius: calc(var(--radius-card) - 2px);
 		overflow: hidden;
-		background: rgba(0, 0, 0, 0.18);
-		box-shadow: 0 8px 24px var(--site-shadow);
-		transition:
-			border-color 0.45s ease,
-			box-shadow 0.45s ease,
-			background-color 0.45s ease;
 	}
 
-	.entry-card__video iframe {
+	.entry__video iframe {
 		display: block;
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		border: 0;
+	}
+
+	@media (max-width: 768px) {
+		.entry {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

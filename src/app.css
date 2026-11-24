@@ -1,43 +1,11 @@
 @import 'tailwindcss';
 
 @font-face {
-	font-family: 'Lora';
+	font-family: 'Familjen Grotesk';
 	font-style: normal;
-	font-weight: 400;
-	font-display: optional;
-	src: url('/fonts/lora-400-latin.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Lora';
-	font-style: normal;
-	font-weight: 500;
-	font-display: optional;
-	src: url('/fonts/lora-400-latin.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Lora';
-	font-style: italic;
-	font-weight: 400;
-	font-display: optional;
-	src: url('/fonts/lora-400-italic-latin.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Fraunces';
-	font-style: normal;
-	font-weight: 300;
+	font-weight: 400 700;
 	font-display: swap;
-	src: url('/fonts/fraunces-300-latin.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Fraunces';
-	font-style: italic;
-	font-weight: 300;
-	font-display: swap;
-	src: url('/fonts/fraunces-300-italic-latin.woff2') format('woff2');
+	src: url('/fonts/familjen-grotesk-latin.woff2') format('woff2');
 }
 
 @view-transition {
@@ -133,24 +101,88 @@ html[data-vt-scrolled] .site-shell__page {
 	}
 }
 
+/* The palette follows the season. Each season sets a light and a dark set of colours:
+   bg = paper, accent = links and the front plate of dots, accent-2 = the brush and the back plate,
+   shade = the tint of the tree's shadow. Summer is the default when no season is set. */
 :root {
-	--site-bg: #f3ede3;
-	--site-text: #1a1410;
-	--site-text-muted: #7a6a58;
-	--site-accent: #5a7e52;
-	--site-accent-soft: rgba(90, 126, 82, 0.1);
-	--site-surface: rgba(255, 255, 255, 0.65);
-	--site-border: rgba(26, 20, 16, 0.1);
-	--site-shadow: rgba(26, 20, 16, 0.06);
-	--site-ring: rgba(26, 20, 16, 0.08);
-	--site-rule: rgba(26, 20, 16, 0.15);
-	--site-max-width: 76rem;
-	--font-body: 'Lora', Georgia, serif;
-	--font-display: 'Fraunces', serif;
-	--text-caption: 0.75rem;
-	--text-body: 1rem;
+	--l-bg: #f3eee3;
+	--l-text: #16233f;
+	--l-muted: #4c5873;
+	--l-accent: #1447d4;
+	--l-accent-2: #ff5a36;
+	--l-shade: 104, 116, 160;
+	--d-bg: #141c33;
+	--d-text: #e9e4d6;
+	--d-muted: #a9b0c4;
+	--d-accent: #86a6ff;
+	--d-accent-2: #ff8266;
+	--d-shade: 62, 72, 115;
+}
+
+html[data-season='spring'] {
+	--l-bg: #f6f1ea;
+	--l-text: #2a2438;
+	--l-muted: #655d75;
+	--l-accent: #27704a;
+	--l-accent-2: #ff6fa8;
+	--l-shade: 130, 118, 170;
+	--d-bg: #1e1b2e;
+	--d-text: #f0eaf2;
+	--d-muted: #b3abc6;
+	--d-accent: #7fd6a0;
+	--d-accent-2: #ff8fbd;
+	--d-shade: 70, 62, 110;
+}
+
+html[data-season='autumn'] {
+	--l-bg: #f4ecdd;
+	--l-text: #2b1d14;
+	--l-muted: #6b5a4c;
+	--l-accent: #b3300d;
+	--l-accent-2: #eba300;
+	--l-shade: 122, 104, 112;
+	--d-bg: #221812;
+	--d-text: #f2e9da;
+	--d-muted: #bfae9c;
+	--d-accent: #ff7a4d;
+	--d-accent-2: #ffc233;
+	--d-shade: 74, 54, 50;
+}
+
+html[data-season='winter'] {
+	--l-bg: #eef1f5;
+	--l-text: #131a2a;
+	--l-muted: #515b70;
+	--l-accent: #1d3c8f;
+	--l-accent-2: #5fb3d9;
+	--l-shade: 112, 126, 152;
+	--d-bg: #0f1422;
+	--d-text: #e8edf5;
+	--d-muted: #a2adc2;
+	--d-accent: #9db7ff;
+	--d-accent-2: #8fd6f5;
+	--d-shade: 52, 61, 83;
+}
+
+:root {
+	--site-bg: var(--l-bg);
+	--site-text: var(--l-text);
+	--site-text-muted: var(--l-muted);
+	--site-accent: var(--l-accent);
+	--site-accent-2: var(--l-accent-2);
+	--site-shade: var(--l-shade);
+	--site-accent-soft: color-mix(in srgb, var(--site-accent) 12%, transparent);
+	--site-surface: color-mix(in srgb, var(--site-bg) 94%, var(--site-text));
+	--site-border: color-mix(in srgb, var(--site-text) 14%, transparent);
+	--site-shadow: rgb(0 0 0 / 0.25);
+	--site-ring: transparent;
+	--site-rule: color-mix(in srgb, var(--site-text) 22%, transparent);
+	--site-max-width: 80rem;
+	--font-body: 'Familjen Grotesk', 'Hiragino Sans', system-ui, sans-serif;
+	--font-display: var(--font-body);
+	--text-caption: 0.9375rem;
+	--text-body: 1.125rem;
 	--text-subtitle: 1.25rem;
-	--text-location: 1.5rem;
 	--space-12: 0.75rem;
 	--space-16: 1rem;
 	--space-24: 1.5rem;
@@ -165,36 +197,82 @@ html[data-vt-scrolled] .site-shell__page {
 
 @media (prefers-color-scheme: dark) {
 	html:not([data-theme]) {
-		--site-bg: #15110d;
-		--site-text: #e0d4c4;
-		--site-text-muted: #988977;
-		--site-accent: #7ab880;
-		--site-accent-soft: rgba(122, 184, 128, 0.1);
-		--site-surface: rgba(28, 23, 16, 0.8);
-		--site-border: rgba(224, 212, 196, 0.1);
-		--site-shadow: rgba(0, 0, 0, 0.3);
-		--site-ring: rgba(224, 212, 196, 0.06);
-		--site-rule: rgba(224, 212, 196, 0.12);
+		--site-bg: var(--d-bg);
+		--site-text: var(--d-text);
+		--site-text-muted: var(--d-muted);
+		--site-accent: var(--d-accent);
+		--site-accent-2: var(--d-accent-2);
+		--site-shade: var(--d-shade);
 		color-scheme: dark;
 	}
 }
 
 html[data-theme='dark'] {
-	--site-bg: #15110d;
-	--site-text: #e0d4c4;
-	--site-text-muted: #988977;
-	--site-accent: #7ab880;
-	--site-accent-soft: rgba(122, 184, 128, 0.1);
-	--site-surface: rgba(28, 23, 16, 0.8);
-	--site-border: rgba(224, 212, 196, 0.1);
-	--site-shadow: rgba(0, 0, 0, 0.3);
-	--site-ring: rgba(224, 212, 196, 0.06);
-	--site-rule: rgba(224, 212, 196, 0.12);
+	--site-bg: var(--d-bg);
+	--site-text: var(--d-text);
+	--site-text-muted: var(--d-muted);
+	--site-accent: var(--d-accent);
+	--site-accent-2: var(--d-accent-2);
+	--site-shade: var(--d-shade);
 	color-scheme: dark;
 }
 
 html[data-theme='light'] {
 	color-scheme: light;
+}
+
+/* Fine paper grain over the whole page. */
+body::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 40;
+	pointer-events: none;
+	mix-blend-mode: multiply;
+	opacity: 0.4;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* The tree's shadow falls on the top of the page only, and fades out before the reading text. */
+.tree-shadows {
+	position: absolute;
+	inset: 0 0 auto;
+	width: 100%;
+	height: var(--shadow-height, 100svh);
+	z-index: 30;
+	pointer-events: none;
+	mix-blend-mode: multiply;
+	mask-image: linear-gradient(#000 72%, transparent);
+	view-transition-name: site-shadows;
+}
+
+/* At night the shadow falls behind the text, so light text keeps its full contrast. */
+html[data-theme='dark'] .tree-shadows {
+	z-index: 1;
+}
+
+/* Selected text is painted by the brush canvas, not by the browser. */
+::selection {
+	background: color-mix(in srgb, var(--site-accent-2) 45%, transparent);
+}
+
+html.brushed ::selection {
+	background: transparent;
+}
+
+.brush {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 35;
+	pointer-events: none;
+	mix-blend-mode: multiply;
+	opacity: 0.5;
+}
+
+html[data-theme='dark'] .brush {
+	mix-blend-mode: screen;
 }
 
 html {

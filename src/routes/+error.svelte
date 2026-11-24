@@ -44,22 +44,12 @@
 
 	.error-card {
 		width: min(100%, 42rem);
-		background: var(--site-surface);
-		border: 1px solid var(--site-border);
-		border-radius: calc(var(--radius-card) + 4px);
-		padding: clamp(1.75rem, 4vw, 3rem);
-		box-shadow: 0 12px 40px var(--site-shadow);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
-		transition:
-			background-color 0.45s ease,
-			border-color 0.45s ease,
-			box-shadow 0.45s ease;
 	}
 
 	.error-code {
 		font-family: var(--font-display);
 		font-size: clamp(3rem, 9vw, 6rem);
+		font-weight: 700;
 		line-height: 0.9;
 		letter-spacing: -0.04em;
 		color: var(--site-accent);
@@ -69,7 +59,7 @@
 	.error-card h1 {
 		font-family: var(--font-display);
 		font-size: clamp(2rem, 6vw, 4rem);
-		font-weight: 300;
+		font-weight: 700;
 		line-height: 1;
 		letter-spacing: -0.03em;
 		color: var(--site-text);

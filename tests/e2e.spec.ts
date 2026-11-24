@@ -67,7 +67,7 @@ test.describe('without javascript', () => {
 				};
 			});
 
-			expect(rootTheme.siteBg).toBe('#15110d');
+			expect(rootTheme.siteBg).toBe('#141c33');
 			expect(rootTheme.colorScheme).toBe('dark');
 		});
 	});

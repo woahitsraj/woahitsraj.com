@@ -22,24 +22,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-12);
+		max-width: 40rem;
 	}
 
 	.detail-list li {
-		position: relative;
-		padding-left: 1.25rem;
 		font-size: var(--text-body);
-		line-height: 1.75;
+		line-height: 1.6;
 		color: var(--site-text);
-	}
-
-	.detail-list li::before {
-		content: '';
-		position: absolute;
-		top: 0.8rem;
-		left: 0;
-		width: 0.4rem;
-		height: 0.4rem;
-		border-radius: var(--radius-round);
-		background: var(--site-accent);
 	}
 </style>

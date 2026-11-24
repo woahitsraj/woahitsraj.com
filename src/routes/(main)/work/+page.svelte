@@ -6,6 +6,12 @@
 
 	const projects = [
 		{
+			name: 'PKSX',
+			href: 'https://pksx.app',
+			stack: 'SvelteKit, Svelte, TypeScript, C#, WebAssembly, Capacitor',
+			details: [m.work_project_4_detail_1(), m.work_project_4_detail_2()]
+		},
+		{
 			name: 'Svelte Summit Partial Hydration Talk',
 			href: 'https://youtu.be/pJcbZr5VlV4?t=28774',
 			embed: 'https://www.youtube.com/embed/pJcbZr5VlV4?start=28774',
@@ -37,11 +43,7 @@
 	<title>{m.work_title()} | {m.profile_name()}</title>
 </svelte:head>
 
-<PageIntro
-	eyebrow={m.work_head_eyebrow()}
-	heading={m.work_head_heading()}
-	subtitle={m.work_head_subtitle()}
-/>
+<PageIntro heading={m.work_head_heading()} subtitle={m.work_head_subtitle()} />
 
 <PageGrid>
 	{#each projects as project, index (project.name)}

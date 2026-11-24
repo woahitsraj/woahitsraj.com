@@ -1,18 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { m } from '$lib/paraglide/messages.js';
 	import { extractLocaleFromUrl, localizeHref } from '$lib/paraglide/runtime.js';
 	import RevealScope from '$lib/RevealScope.svelte';
 	import LanguageSelector from '$lib/LanguageSelector.svelte';
+	import SeasonSelector from '$lib/SeasonSelector.svelte';
+	import { brushSelection } from '$lib/fx/brush';
+	import { treeShadows } from '$lib/fx/tree';
+	import { onPaletteChange, palette, season } from '$lib/season.svelte';
 
 	interface Props {
 		children?: import('svelte').Snippet;
 		footerText?: string;
 	}
-
-	const LIGHT_THEME = '#f3ede3';
-	const DARK_THEME = '#15110d';
 
 	let { children, footerText = m.profile_name() }: Props = $props();
 	let routeId = $derived(page.route.id);
@@ -29,20 +31,48 @@
 		const theme = nextDark ? 'dark' : 'light';
 		root.dataset.theme = theme;
 
-		const themeMeta = document.querySelector('meta[name="theme-color"]');
-		themeMeta?.setAttribute('content', nextDark ? DARK_THEME : LIGHT_THEME);
+		syncThemeColour();
 	}
 
-	onMount(() => {
-		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	function syncThemeColour() {
+		const paper = getComputedStyle(document.documentElement).getPropertyValue('--site-bg').trim();
+		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', paper);
+	}
 
-		try {
-			const stored = localStorage.getItem('site-theme');
-			applyTheme(stored !== null ? stored === 'dark' : prefersDark);
-		} catch {
-			applyTheme(prefersDark);
+	// The tree's shadow belongs to the shell element, which is rebuilt when the language changes.
+	const shadows: Attachment<HTMLElement> = (host) => {
+		// The shadow ends where the hero ends, so it never lies over the reading text.
+		const reach = () => {
+			const hero = host.querySelector('[data-hero]');
+			const bottom = hero
+				? hero.getBoundingClientRect().bottom - host.getBoundingClientRect().top + 24
+				: innerHeight * 0.6;
+			host.style.setProperty('--shadow-height', `${Math.round(bottom)}px`);
+		};
+		const pageEl = host.querySelector('.site-shell__page');
+		const sizer = new ResizeObserver(reach);
+		const pages = new MutationObserver(reach);
+		if (pageEl) {
+			sizer.observe(pageEl);
+			pages.observe(pageEl, { childList: true, subtree: true });
 		}
-	});
+		reach();
+		// The height is set first, so the tree is drawn at its final size in the same frame.
+		const tree = treeShadows(host, season.current, palette().shade);
+		const unwatch = onPaletteChange(() => {
+			tree.restyle(season.current, palette().shade);
+			syncThemeColour();
+		});
+
+		return () => {
+			pages.disconnect();
+			sizer.disconnect();
+			unwatch();
+			tree.destroy();
+		};
+	};
+
+	onMount(brushSelection);
 
 	function toggle() {
 		const nextDark = !dark;
@@ -57,7 +87,7 @@
 </script>
 
 {#key currentLocale}
-	<div class="site-shell">
+	<div class="site-shell" {@attach shadows}>
 		<nav class="site-shell__frame">
 			<a href={homeHref} class="nav-home">
 				<span class="nav-link__label" data-baffle>{m.nav_home()}</span>
@@ -71,6 +101,7 @@
 				</a>
 			</div>
 			<div class="nav-controls">
+				<SeasonSelector />
 				<LanguageSelector />
 				<button
 					class="theme-toggle"
@@ -178,30 +209,19 @@
 		padding-block: 1.2rem;
 	}
 
-	nav::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		height: 1px;
-		background: var(--site-rule);
-		transition: background-color 0.45s ease;
-	}
-
 	.nav-home {
 		grid-area: home;
 		justify-self: start;
 		display: inline-flex;
 		align-items: center;
 		font-size: var(--text-body);
-		letter-spacing: 0.08em;
-		color: var(--site-accent);
+		font-weight: 600;
+		color: var(--site-text);
 		text-decoration: none;
 	}
 
 	.nav-home:hover {
-		color: var(--site-text);
+		color: var(--site-accent);
 	}
 
 	.page-links {
@@ -217,6 +237,7 @@
 		align-items: center;
 		justify-content: center;
 		font-size: var(--text-body);
+		font-weight: 600;
 		color: var(--site-text-muted);
 		text-decoration: none;
 	}
@@ -332,7 +353,6 @@
 	footer span {
 		font-size: var(--text-caption);
 		color: var(--site-text-muted);
-		letter-spacing: 0.08em;
 		transition: color 0.45s ease;
 	}
 

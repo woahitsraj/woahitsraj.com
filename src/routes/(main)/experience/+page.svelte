@@ -54,11 +54,7 @@
 	<title>{m.experience_title()} | {m.profile_name()}</title>
 </svelte:head>
 
-<PageIntro
-	eyebrow={m.experience_head_eyebrow()}
-	heading={m.experience_head_heading()}
-	subtitle={m.experience_head_subtitle()}
-/>
+<PageIntro heading={m.experience_head_heading()} subtitle={m.experience_head_subtitle()} />
 
 <PageGrid>
 	{#each experience as item, index (item.role + item.company + item.period)}

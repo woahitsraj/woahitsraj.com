@@ -9,100 +9,44 @@
 		siThreads,
 		siX
 	} from 'simple-icons';
-	import type { SimpleIcon } from 'simple-icons';
 	import { m } from '$lib/paraglide/messages.js';
 	import { extractLocaleFromUrl } from '$lib/paraglide/runtime.js';
-	import PageGrid from '$lib/PageGrid.svelte';
+	import Hero from '$lib/Hero.svelte';
 	import SocialLinks from '$lib/SocialLinks.svelte';
-	import me from '$lib/assets/me.webp';
-	import type { PageData } from './$types';
+	import me from '$lib/assets/me.jpeg';
 
-	interface Props {
-		data: PageData;
-	}
-
-	type LinkIcon = Pick<SimpleIcon, 'path'>;
-
-	function flagFromCountryCode(code?: string) {
-		if (!code || code.length !== 2) return '🇸🇪';
-		return String.fromCodePoint(
-			...code
-				.toUpperCase()
-				.split('')
-				.map((char) => 127397 + char.charCodeAt(0))
-		);
-	}
-
-	let { data }: Props = $props();
-	let currentLocale = $derived(extractLocaleFromUrl(page.url) ?? 'en');
-	let socialLinks = $derived([
+	// simple-icons has no LinkedIn mark.
+	const linkedin = {
+		path: 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'
+	};
+	const socialLinks = [
 		{ label: 'GitHub', href: 'https://github.com/woahitsraj', icon: siGithub },
-		{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/woahitsraj/' },
+		{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/woahitsraj/', icon: linkedin },
 		{ label: 'Bluesky', href: 'https://bsky.app/profile/woahitsraj.com', icon: siBluesky },
 		{ label: 'Goodreads', href: 'https://www.goodreads.com/woahitsraj', icon: siGoodreads },
 		{ label: 'Letterboxd', href: 'https://letterboxd.com/woahitsraj/', icon: siLetterboxd },
 		{ label: 'Instagram', href: 'https://instagram.com/woahitsraj', icon: siInstagram },
 		{ label: 'Threads', href: 'https://www.threads.net/@woahitsraj', icon: siThreads },
 		{ label: 'Twitter', href: 'https://twitter.com/woahitsraj', icon: siX }
-	] satisfies { label: string; href: string; icon?: LinkIcon }[]);
-	let city = $derived(data.city);
-	let country = $derived(data.country);
-	let countryCode = $derived(data.countryCode);
-	let locationCountry = $derived.by(() => {
-		if (!countryCode) {
-			return country ?? m.home_location_fallback_country();
-		}
+	];
 
-		try {
-			const displayNames = new Intl.DisplayNames([currentLocale], {
-				type: 'region'
-			});
-
-			return (
-				displayNames.of(countryCode.toUpperCase()) ?? country ?? m.home_location_fallback_country()
-			);
-		} catch {
-			return country ?? m.home_location_fallback_country();
-		}
-	});
-	let locationCity = $derived(city ?? m.home_location_fallback_city());
-	let locationFlag = $derived(flagFromCountryCode(countryCode ?? 'SE'));
-	let heroNameLastSuffix = $derived(m.profile_name_last_suffix());
+	let currentLocale = $derived(extractLocaleFromUrl(page.url) ?? 'en');
+	let nameSuffix = $derived(m.profile_name_last_suffix());
 </script>
 
 <svelte:head>
 	<title>{m.profile_name()}</title>
 </svelte:head>
 
-<header class="home-hero reveal reveal-1">
-	<figure class="home-hero__portrait">
-		<img
-			src={me}
-			alt={m.profile_name()}
-			width="360"
-			height="342"
-			decoding="async"
-			fetchpriority="high"
-		/>
-	</figure>
-	<div class="home-hero__content">
-		<p class="home-hero__eyebrow" data-baffle>{m.home_eyebrow()}</p>
-		<h1 class="home-hero__title">
-			<span data-baffle>{m.profile_name_first()}</span><br /><em
-				class:home-hero__title-last--japanese={currentLocale === 'ja'}
-				><span data-baffle>{m.profile_name_last()}</span>{#if heroNameLastSuffix}<span
-						class="home-hero__title-suffix"
-						data-baffle>{heroNameLastSuffix}</span
-					>{/if}</em
-			>
-		</h1>
-		<p class="home-hero__subtitle" data-baffle>{m.home_subtitle()}</p>
-	</div>
-</header>
+<Hero eyebrow={m.home_eyebrow()} subtitle={m.home_subtitle()}>
+	{#snippet heading()}
+		{m.profile_name_first()}<br />{m.profile_name_last()}{nameSuffix}
+	{/snippet}
+</Hero>
 
-<PageGrid>
-	<section class="home-card home-card--about page-grid__item page-grid__item--wide reveal reveal-2">
-		<h2 data-baffle>{m.home_about_heading()}</h2>
+<main lang={currentLocale}>
+	<section class="about reveal reveal-2" aria-label={m.home_about_heading()}>
+		<img src={me} alt={m.profile_name()} width="576" height="546" decoding="async" />
 		<p>
 			<span data-baffle>{m.home_about_p1_before()}</span><a href="https://withglide.com/">Glide</a
 			><span data-baffle>{m.home_about_p1_after()}</span>
@@ -112,262 +56,66 @@
 		<p data-baffle>{m.home_about_p4()}</p>
 	</section>
 
-	<section class="home-card home-card--skills page-grid__item reveal reveal-3">
-		<h2 data-baffle>{m.home_skills_heading()}</h2>
-		<dl class="skills-list">
-			<div>
-				<dt data-baffle>{m.home_skills_programming_languages()}</dt>
-				<dd data-baffle>{m.home_skills_programming_languages_list()}</dd>
-			</div>
-			<div>
-				<dt data-baffle>{m.home_skills_frameworks_tools()}</dt>
-				<dd data-baffle>{m.home_skills_frameworks_tools_list()}</dd>
-			</div>
-		</dl>
-	</section>
-
-	<section class="home-card home-card--location page-grid__item reveal reveal-4">
-		<h2 data-baffle>{m.home_location_heading()}</h2>
-		<p class="flag" aria-hidden="true">{locationFlag}</p>
-		<p class="country" data-baffle>{locationCountry}</p>
-		<p class="city" data-baffle>{locationCity}</p>
-	</section>
-
-	<section class="home-card home-card--languages page-grid__item reveal reveal-5">
-		<h2 data-baffle>{m.home_languages_heading()}</h2>
-		<ul>
-			<li>
-				<span data-baffle>{m.home_language_english()}</span>
-				<em data-baffle>{m.home_language_native()}</em>
-			</li>
-			<li>
-				<span data-baffle>{m.home_language_japanese()}</span>
-				<em data-baffle>{m.home_language_conversational()}</em>
-			</li>
-			<li>
-				<span data-baffle>{m.home_language_swedish()}</span>
-				<em data-baffle>{m.home_language_conversational()}</em>
-			</li>
-			<li>
-				<span data-baffle>{m.home_language_spanish()}</span>
-				<em data-baffle>{m.home_language_elementary()}</em>
-			</li>
-		</ul>
-	</section>
-
-	<section class="home-card home-card--connect page-grid__item reveal reveal-5">
+	<section class="connect reveal reveal-3">
 		<h2 data-baffle>{m.home_connect_heading()}</h2>
 		<SocialLinks links={socialLinks} />
 	</section>
-</PageGrid>
+</main>
 
 <style>
-	.home-hero {
-		padding: var(--space-48) 0 var(--space-32);
-		display: flex;
-		align-items: center;
-		gap: 2.5rem;
+	section {
+		padding-block: clamp(1.5rem, 3vw, 2.5rem);
+		border-top: 1px solid var(--site-rule);
 	}
 
-	.home-hero__portrait {
-		flex-shrink: 0;
-		width: clamp(120px, 15vw, 180px);
-		height: clamp(120px, 15vw, 180px);
-		padding: 0.6rem;
-		margin: 0;
-		border-radius: var(--radius-round);
-		border: 1px solid var(--site-ring);
-		background: var(--site-bg);
-		box-shadow:
-			inset 0 0 0 6px var(--site-ring),
-			inset 0 0 0 20px var(--site-bg);
-		transition:
-			background-color 0.45s ease,
-			border-color 0.45s ease,
-			box-shadow 0.45s ease;
+	.about {
+		display: flow-root;
 	}
 
-	.home-hero__portrait img {
-		display: block;
-		width: 100%;
-		height: 100%;
+	/* The text runs round the portrait. */
+	.about img {
+		float: left;
+		width: clamp(8.5rem, 24vw, 15rem);
+		height: auto;
+		aspect-ratio: 1;
+		margin: 0.3rem clamp(1.25rem, 3vw, 2.25rem) 0.6rem 0;
 		border-radius: var(--radius-round);
+		shape-outside: circle(50%);
+		shape-margin: clamp(0.75rem, 1.6vw, 1.4rem);
 		object-fit: cover;
-		object-position: center 24%;
-		filter: saturate(0.96) contrast(1.02);
+		object-position: 50% 30%;
 	}
 
-	.home-hero__content {
-		max-width: 44rem;
-	}
-
-	.home-hero__eyebrow {
+	.about p {
+		margin: 0 0 1em;
+		max-width: 52rem;
 		font-size: var(--text-body);
-		font-style: italic;
-		color: var(--site-text-muted);
-		margin: 0 0 0.45rem;
+		line-height: 1.6;
 	}
 
-	.home-hero__title {
-		font-family: var(--font-display);
-		font-size: clamp(3rem, 7vw, 6rem);
-		font-weight: 300;
-		line-height: 1;
-		margin: 0 0 0.65rem;
-		letter-spacing: -0.03em;
-		color: var(--site-text);
-		transition: color 0.45s ease;
+	.about p:first-of-type {
+		font-size: clamp(1.25rem, 1.9vw, 1.5rem);
+		line-height: 1.4;
 	}
 
-	.home-hero__title em {
-		font-style: italic;
+	.about a {
 		color: var(--site-accent);
-		transition: color 0.45s ease;
-	}
-
-	.home-hero__title-suffix {
-		white-space: nowrap;
-	}
-
-	.home-hero__subtitle {
-		font-size: var(--text-subtitle);
-		color: var(--site-text-muted);
-		margin: 0;
-		letter-spacing: 0.02em;
-		transition: color 0.45s ease;
-	}
-
-	.home-card h2 {
-		font-size: var(--text-caption);
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: var(--site-accent);
-		margin: 0 0 var(--space-16);
-		font-weight: 400;
-		transition: color 0.45s ease;
-	}
-
-	.home-card--about p {
-		font-size: var(--text-body);
-		line-height: 1.8;
-		color: var(--site-text);
-		margin: 0 0 0.75rem;
-		transition: color 0.45s ease;
-	}
-
-	.home-card--about p:last-child {
-		margin-bottom: 0;
-	}
-
-	.home-card--about a {
-		color: var(--site-accent);
-		font-weight: 500;
-		text-decoration-line: underline;
 		text-decoration-thickness: 1px;
-		text-underline-offset: 0.18em;
-		text-decoration-color: rgba(122, 184, 128, 0.45);
+		text-underline-offset: 0.2em;
 	}
 
-	.home-card--about a:hover {
-		color: var(--site-text);
-		text-decoration-color: var(--site-accent);
+	.about a:hover {
+		text-decoration-thickness: 2px;
 	}
 
-	.skills-list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-16);
-		margin: 0;
+	h2 {
+		margin: 0 0 0.75rem;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--site-accent);
 	}
 
-	.skills-list div {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.skills-list dt {
-		font-size: var(--text-caption);
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--site-text-muted);
-	}
-
-	.skills-list dd {
-		margin: 0;
-		font-size: var(--text-body);
-		line-height: 1.7;
-		color: var(--site-text);
-	}
-
-	.flag {
-		font-size: 2.5rem;
-		line-height: 1;
-		margin-bottom: 0.4rem;
-	}
-
-	.country {
-		font-family: var(--font-display);
-		font-size: var(--text-location);
-		font-weight: 300;
-		line-height: 1.1;
-		margin-bottom: 0.2rem;
-		transition: color 0.45s ease;
-	}
-
-	.city {
-		font-size: var(--text-caption);
-		color: var(--site-text-muted);
-		transition: color 0.45s ease;
-	}
-
-	.home-card--languages ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 0.7rem;
-	}
-
-	.home-card--languages li {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: var(--site-text);
-	}
-
-	.home-card--languages li span {
-		flex: 1;
-		font-size: var(--text-body);
-		transition: color 0.45s ease;
-	}
-
-	.home-card--languages li em {
-		font-size: var(--text-caption);
-		color: var(--site-text-muted);
-		font-style: italic;
-		transition: color 0.45s ease;
-	}
-
-	@media (max-width: 768px) {
-		.home-hero {
-			gap: var(--space-24);
-			padding: var(--space-32) 0 var(--space-24);
-		}
-
-		.home-hero__title {
-			line-height: 1;
-		}
-
-		.home-hero__title-last--japanese {
-			display: inline-flex;
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.home-hero__title-last--japanese .home-hero__title-suffix {
-			display: inline;
-		}
+	.connect {
+		padding-bottom: 4rem;
 	}
 </style>
