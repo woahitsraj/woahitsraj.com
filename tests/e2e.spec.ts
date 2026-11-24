@@ -72,3 +72,14 @@ test.describe('without javascript', () => {
 		});
 	});
 });
+
+test.describe('with a dark system preference', () => {
+	test.use({ colorScheme: 'dark' });
+
+	test('the first click on the theme toggle switches to light', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+		await page.locator('.theme-toggle').click();
+		await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+	});
+});

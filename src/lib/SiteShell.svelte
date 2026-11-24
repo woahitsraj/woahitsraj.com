@@ -72,7 +72,19 @@
 		};
 	};
 
-	onMount(brushSelection);
+	onMount(() => {
+		// The head script has already set the theme. Take it over, so the first click toggles it.
+		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+		try {
+			const stored = localStorage.getItem('site-theme');
+			applyTheme(stored !== null ? stored === 'dark' : prefersDark);
+		} catch {
+			applyTheme(prefersDark);
+		}
+
+		return brushSelection();
+	});
 
 	function toggle() {
 		const nextDark = !dark;
